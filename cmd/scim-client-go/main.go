@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"github.com/jawee/scim-client-go/internal"
+)
 
 func main() {
-    fmt.Printf("Hello World \n")
+    internal.MainFunc()
 }
