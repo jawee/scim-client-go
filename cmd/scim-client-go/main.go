@@ -2,12 +2,10 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/jawee/scim-client-go/internal"
 )
 
 func main() {
-    internal.MainFunc()
+    // internal.MainFunc()
 
     user1 := User {
         Id: "asdf",
@@ -33,12 +31,12 @@ func main() {
         ExternalId: "",
     }
 
-    res := GetDiff(user1, user2)
+    res := getDiff(user1, user2)
 
-    fmt.Printf("%v\n", res)
+    fmt.Printf("Properties to be updated: %v\n", res)
 }
 
-func GetDiff(user1, user2 User) []string {
+func getDiff(user1, user2 User) []string {
     result := []string{}
     if user1.Id != user2.Id {
         result = append(result, "Id")
