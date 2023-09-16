@@ -1,5 +1,7 @@
 default:
-	go run ./cmd/scim-client-go
+	# go run ./cmd/scim-client-go
+	docker build -t scim-client .
+	docker run scim-client
 
 run:
 	go run ./cmd/scim-client-go

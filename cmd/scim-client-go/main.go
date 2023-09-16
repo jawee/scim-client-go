@@ -36,19 +36,21 @@ func main() {
     fmt.Printf("Properties to be updated: %v\n", res)
 }
 
+type Attribute string
+
 const (
-    UserNameAttribute string = "UserName"
-    IdAttribute string = "Id"
-    DepartmentAttribute string = "Department"
-    PhoneNumberAttribute string = "PhoneNumber"
-    EmailAttribute string = "Email"
-    FirstNameAttribute string =  "FirstName"
-    LastNameAttribute string =  "LastName"
-    ActiveAttribute string =  "Active"
+    UserNameAttribute Attribute = "UserName"
+    IdAttribute Attribute = "Id"
+    DepartmentAttribute Attribute = "Department"
+    PhoneNumberAttribute Attribute = "PhoneNumber"
+    EmailAttribute Attribute = "Email"
+    FirstNameAttribute Attribute =  "FirstName"
+    LastNameAttribute Attribute =  "LastName"
+    ActiveAttribute Attribute =  "Active"
 )
 
-func getDiff(user1, user2 User) []string {
-    result := []string{}
+func getDiff(user1, user2 User) []Attribute {
+    result := []Attribute{}
     if user1.Id != user2.Id {
         result = append(result, "Id")
     }
