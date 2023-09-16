@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/jawee/scim-client-go/internal/configuration"
@@ -14,12 +15,12 @@ func main() {
     configuration, err := configuration.New(configProvider)
 
     if err != nil {
-        // log.Println(err)
+        log.Printf("%s\n", err)
         os.Exit(1)
     }
 
     if configuration == nil {
-        // log.Println("Configuration is nil")
+        log.Printf("Configuration is nil\n")
         os.Exit(1)
     }    
 
@@ -68,7 +69,7 @@ const (
 func getDiff(user1, user2 User) []Attribute {
     result := []Attribute{}
     if user1.Id != user2.Id {
-        result = append(result, "Id")
+        result = append(result, IdAttribute)
     }
 
     if user1.UserName != user2.UserName {
