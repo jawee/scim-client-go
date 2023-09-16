@@ -1,0 +1,4 @@
+{
+    "ScimApiUrl": "https://some.domain/scim/v2",
+    "ScimApiToken": "somet0ken"
+}

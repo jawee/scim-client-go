@@ -1,6 +1,6 @@
 default:
 	docker build -t scim-client .
-	docker run scim-client
+	docker run -v `pwd`/config:/config scim-client
 
 run:
 	go run ./cmd/scim-client-go
@@ -13,4 +13,4 @@ docker-build:
 	docker build -t scim-client .
 
 docker-run:
-	docker run scim-client
+	docker run -v `pwd`/config:/config scim-client

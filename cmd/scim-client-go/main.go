@@ -2,10 +2,26 @@ package main
 
 import (
 	"fmt"
+	"os"
+
+	"github.com/jawee/scim-client-go/internal/configuration"
 )
 
 func main() {
     // time.Sleep(5* time.Second);
+
+    configProvider := new(configuration.FileConfigurationProvider)
+    configuration, err := configuration.New(configProvider)
+
+    if err != nil {
+        // log.Println(err)
+        os.Exit(1)
+    }
+
+    if configuration == nil {
+        // log.Println("Configuration is nil")
+        os.Exit(1)
+    }    
 
     user1 := User {
         Id: "asdf",
