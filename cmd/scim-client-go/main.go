@@ -38,6 +38,17 @@ func main() {
     fmt.Printf("Properties to be updated: %v\n", res)
 }
 
+const (
+    UserNameAttribute string = "UserName"
+    IdAttribute string = "Id"
+    DepartmentAttribute string = "Department"
+    PhoneNumberAttribute string = "PhoneNumber"
+    EmailAttribute string = "Email"
+    FirstNameAttribute string =  "FirstName"
+    LastNameAttribute string =  "LastName"
+    ActiveAttribute string =  "Active"
+)
+
 func getDiff(user1, user2 User) []string {
     result := []string{}
     if user1.Id != user2.Id {
@@ -45,31 +56,31 @@ func getDiff(user1, user2 User) []string {
     }
 
     if user1.UserName != user2.UserName {
-        result = append(result, "UserName")
+        result = append(result, UserNameAttribute)
     }
 
     if user1.Email != user2.Email {
-        result = append(result, "Email")
+        result = append(result, EmailAttribute)
     }
     
     if user1.Department != user2.Department {
-        result = append(result, "Department")
+        result = append(result, DepartmentAttribute)
     }
 
     if user1.PhoneNumber != user2.PhoneNumber {
-        result = append(result, "PhoneNumber")
+        result = append(result, PhoneNumberAttribute)
     }
 
     if user1.FirstName != user2.FirstName {
-        result = append(result, "FirstName")
+        result = append(result, FirstNameAttribute)
     }
 
     if user1.LastName != user2.LastName {
-        result = append(result, "LastName")
+        result = append(result, LastNameAttribute)
     }
 
     if user1.Active != user2.Active {
-        result = append(result, "Active")
+        result = append(result, ActiveAttribute)
     }
 
     return result
