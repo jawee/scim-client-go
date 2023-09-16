@@ -11,5 +11,6 @@ RUN go build -o /usr/local/bin/app -buildvcs=false ./cmd/...
 
 RUN mkdir /config
 RUN mkdir /data
+RUN mkdir /logs
 
 CMD ["app"]
