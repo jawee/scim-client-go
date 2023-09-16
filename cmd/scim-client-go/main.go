@@ -5,8 +5,6 @@ import (
 )
 
 func main() {
-
-
     // time.Sleep(5* time.Second);
 
     user1 := User {
