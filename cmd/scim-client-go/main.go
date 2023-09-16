@@ -5,7 +5,9 @@ import (
 )
 
 func main() {
-    // internal.MainFunc()
+
+
+    // time.Sleep(5* time.Second);
 
     user1 := User {
         Id: "asdf",
