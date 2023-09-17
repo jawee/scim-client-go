@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -50,7 +49,7 @@ func main() {
 
     res := getDiff(user1, user2)
 
-    fmt.Printf("Properties to be updated: %v\n", res)
+    log.Printf("Properties to be updated: %v\n", res)
 }
 
 type Attribute string

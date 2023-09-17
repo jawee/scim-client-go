@@ -16,12 +16,12 @@ type FileConfigurationProvider struct {
 
 type Config struct { 
     ScimUrl string `json:"scimapiurl"`
-    ScimToken string `json:"scimtoken"`
+    ScimToken string `json:"scimapitoken"`
 }
 
 func (f *FileConfigurationProvider) GetConfigurationJson() ([]byte, error) {
     configDir := "/config"
-    log.Println("FileConfigurationProvider.GetConfigurationJson. Loading configuration from " + configDir + "/config.json")
+    log.Printf("FileConfigurationProvider.GetConfigurationJson. Loading configuration from %s/config.json\n", configDir)
     path := path.Join(configDir, "config.json")
     file, err := os.Open(path)
 
