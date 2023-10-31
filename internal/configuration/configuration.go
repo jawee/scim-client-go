@@ -21,6 +21,7 @@ type Config struct {
 }
 
 func findConfigurationFile() (*os.File, error) {
+    // userCfgDir, err := os.UserConfigDir();
     cwd, err := os.Getwd()
     if err != nil {
         log.Printf("FileConfigurationProvider.findConfigurationFile. Couldn't get cwd\n")
