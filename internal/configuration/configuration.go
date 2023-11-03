@@ -25,6 +25,7 @@ func findConfigurationFile() (*os.File, error) {
     cwd, err := os.Getwd()
     if err != nil {
         log.Printf("FileConfigurationProvider.findConfigurationFile. Couldn't get cwd\n")
+        return nil, err
     }
 
     configDir := "/configs"
