@@ -1,4 +1,4 @@
-package scimapi
+package models
 
 import "time"
 

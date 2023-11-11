@@ -1,4 +1,4 @@
-package scimapi
+package models
 
 type PostUserRequest struct {
     UserName       string         `json:"userName"`
