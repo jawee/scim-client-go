@@ -1,55 +1,57 @@
 package main
 
 import (
-	"log"
-	"os"
-
-	"github.com/jawee/scim-client-go/internal/configuration"
+	// "log"
+	// "os"
+	//
+	// "github.com/jawee/scim-client-go/internal/configuration"
+    "github.com/jawee/scim-client-go/internal/scim-api"
 )
 
 func main() {
     // time.Sleep(5* time.Second);
 
-    configProvider := new(configuration.FileConfigurationProvider)
-    configuration, err := configuration.New(configProvider)
+    // configProvider := new(configuration.FileConfigurationProvider)
+    // configuration, err := configuration.New(configProvider)
+    scimapi.HandleUser(nil, nil)
 
-    if err != nil {
-        log.Printf("%s\n", err)
-        os.Exit(1)
-    }
-
-    if configuration == nil {
-        log.Printf("Configuration is nil\n")
-        os.Exit(1)
-    }    
-
-    user1 := User {
-        Id: "asdf",
-        UserName: "some.user@company.name",
-        Email: "some.user@company.name",
-        Department: "clown",
-        PhoneNumber: "12345678",
-        FirstName: "Some",
-        LastName: "User",
-        Active: true,
-        ExternalId: "",
-    }
-
-    user2 := User {
-        Id: "asdf",
-        UserName: "some@user.name",
-        Email: "some@user.name",
-        Department: "clown",
-        PhoneNumber: "12345678",
-        FirstName: "Some",
-        LastName: "User",
-        Active: true,
-        ExternalId: "",
-    }
-
-    res := getDiff(user1, user2)
-
-    log.Printf("Properties to be updated: %v\n", res)
+    // if err != nil {
+    //     log.Printf("%s\n", err)
+    //     os.Exit(1)
+    // }
+    //
+    // if configuration == nil {
+    //     log.Printf("Configuration is nil\n")
+    //     os.Exit(1)
+    // }    
+    //
+    // user1 := User {
+    //     Id: "asdf",
+    //     UserName: "some.user@company.name",
+    //     Email: "some.user@company.name",
+    //     Department: "clown",
+    //     PhoneNumber: "12345678",
+    //     FirstName: "Some",
+    //     LastName: "User",
+    //     Active: true,
+    //     ExternalId: "",
+    // }
+    //
+    // user2 := User {
+    //     Id: "asdf",
+    //     UserName: "some@user.name",
+    //     Email: "some@user.name",
+    //     Department: "clown",
+    //     PhoneNumber: "12345678",
+    //     FirstName: "Some",
+    //     LastName: "User",
+    //     Active: true,
+    //     ExternalId: "",
+    // }
+    //
+    // res := getDiff(user1, user2)
+    //
+    // log.Printf("Properties to be updated: %v\n", res)
 }
 
 type Attribute string

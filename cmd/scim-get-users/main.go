@@ -3,14 +3,17 @@ package main
 import (
 	"fmt"
 	"log"
+
+    
+	"github.com/jawee/scim-client-go/internal/models"
 )
 
 
 func main() {
     sourceUsers := getSourceUsers()
 
-    toCreate := make([]User, 0)
-    toUpdate := make([]User, 0)
+    toCreate := make([]models.User, 0)
+    toUpdate := make([]models.User, 0)
 
     for _, v := range sourceUsers {
         _, err := getDbUserById(v.Id)
@@ -31,8 +34,8 @@ func main() {
     }
 }
 
-func getDbUserById(id string) (*User, error) {
-    users := []User{
+func getDbUserById(id string) (*models.User, error) {
+    users := []models.User {
         {
             Id: "1",
             UserName: "some.user@company.name",
@@ -57,7 +60,7 @@ func getDbUserById(id string) (*User, error) {
         },
     }
 
-    var res *User
+    var res *models.User
     for _, v := range users {
         if v.Id == id {
             res = &v
@@ -72,8 +75,8 @@ func getDbUserById(id string) (*User, error) {
     return res, nil
 }
 
-func getSourceUsers() []User {
-    users := []User{
+func getSourceUsers() []models.User {
+    users := []models.User{
         {
             Id: "1",
             UserName: "some.user@company.name",
@@ -111,14 +114,3 @@ func getSourceUsers() []User {
     return users
 }
 
-type User struct {
-    Id string
-    UserName string
-    Email string
-    PhoneNumber string
-    Department string
-    FirstName string
-    LastName string
-    Active bool
-    ExternalId string
-}
