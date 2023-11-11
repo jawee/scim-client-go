@@ -29,8 +29,8 @@ type Name struct {
 }
 
 type EnterpriseUser struct {
-	Manager    Manager `json:"manager"`
-	Department string  `json:"department"`
+    Manager    Manager `json:"manager"`
+    Department string  `json:"department"`
 }
 
 type Resources struct {
@@ -47,19 +47,19 @@ type Resources struct {
 }
 
 type PostResponse struct {
-	EnterpriseUser EnterpriseUser `json:"urn:ietf:params:scim:schemas:extension:enterprise:2.1:User"`
-	Active         bool           `json:"active"`
-	DisplayName    string         `json:"displayName"`
-	Emails         []Emails       `json:"emails"`
-	Meta           Meta           `json:"meta"`
-	Name           Name           `json:"name"`
-	UserName       string         `json:"userName"`
-	ExternalID     string         `json:"externalId"`
-	ID             string         `json:"id"`
-	Schemas        []string       `json:"schemas"`
+    EnterpriseUser EnterpriseUser `json:"urn:ietf:params:scim:schemas:extension:enterprise:2.1:User"`
+    Active         bool           `json:"active"`
+    DisplayName    string         `json:"displayName"`
+    Emails         []Emails       `json:"emails"`
+    Meta           Meta           `json:"meta"`
+    Name           Name           `json:"name"`
+    UserName       string         `json:"userName"`
+    ExternalID     string         `json:"externalId"`
+    ID             string         `json:"id"`
+    Schemas        []string       `json:"schemas"`
 }
 
 type Manager struct {
-	Value string `json:"value"`
+    Value string `json:"value"`
 }
 
