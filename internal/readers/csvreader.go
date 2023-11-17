@@ -40,13 +40,13 @@ func ReadFile(in io.Reader) ([]models.User, error) {
         log.Printf("%v\n", rec)
 
         user := models.User {
-            Id:  rec[indexes[0]],
-            UserName: rec[indexes[1]],
-            Email: rec[indexes[1]],
-            FirstName: rec[indexes[2]],
-            LastName: rec[indexes[3]],
-            Department: rec[indexes[4]],
-            PhoneNumber: rec[indexes[5]],
+            Id:  rec[indexes[ID]],
+            UserName: rec[indexes[EMAIL]],
+            Email: rec[indexes[EMAIL]],
+            FirstName: rec[indexes[FIRSTNAME]],
+            LastName: rec[indexes[LASTNAME]],
+            Department: rec[indexes[DEPARTMENT]],
+            PhoneNumber: rec[indexes[PHONENUMBER]],
         }
 
         users = append(users, user)
@@ -54,6 +54,15 @@ func ReadFile(in io.Reader) ([]models.User, error) {
 
     return users, nil
 }
+
+var (
+    ID = 0
+    EMAIL = 1
+    FIRSTNAME = 2
+    LASTNAME = 3
+    DEPARTMENT = 4
+    PHONENUMBER = 5
+)
 
 func columnNotFoundError(column string) error {
     return fmt.Errorf("Column '%s' not found.", column)
