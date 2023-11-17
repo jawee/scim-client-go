@@ -59,43 +59,27 @@ func columnNotFoundError(column string) error {
     return fmt.Errorf("Column '%s' not found.", column)
 }
 
+func getIndexForColumn(row []string, column string) (int, error) {
+    idx := indexOf(row, column)
+    if idx == -1 {
+        return -1, columnNotFoundError("Id")
+    }
+
+    return idx, nil
+}
+
 func getIndexes(headerRow []string) ([]int, error) {
     indexes := make([]int, 0)
 
-    idx := indexOf(headerRow, "Id")
-    if idx == -1 {
-        return nil, columnNotFoundError("Id")
-    }
-    indexes = append(indexes, idx)
-    idx = indexOf(headerRow, "Email")
-    if idx == -1 {
-        return nil, columnNotFoundError("Email")
-    }
-    indexes = append(indexes, idx)
+    columns := []string { "Id", "Email", "FirstName", "LastName", "Department", "MobilePhone" }
 
-    idx = indexOf(headerRow, "FirstName")
-    if idx == -1 {
-        return nil, columnNotFoundError("FirstName")
+    for _, v := range columns {
+        idx, err := getIndexForColumn(headerRow, v)
+        if err != nil {
+            return nil, err
+        }
+        indexes = append(indexes, idx)
     }
-    indexes = append(indexes, idx)
-
-    idx = indexOf(headerRow, "LastName")
-    if idx == -1 {
-        return nil, columnNotFoundError("LastName")
-    }
-    indexes = append(indexes, idx)
-
-    idx = indexOf(headerRow, "Department")
-    if idx == -1 {
-        return nil, columnNotFoundError("Department")
-    }
-    indexes = append(indexes, idx)
-
-    idx = indexOf(headerRow, "MobilePhone")
-    if idx == -1 {
-        return nil, columnNotFoundError("MobilePhone")
-    }
-    indexes = append(indexes, idx)
 
     return indexes, nil
 }
