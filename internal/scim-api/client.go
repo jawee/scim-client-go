@@ -33,8 +33,7 @@ func HandleUser(newUser *models.User, oldUser *models.User) (ExternalId, error) 
     }
     request.Header.Set("Authorization", "Bearer " + TOKEN)
 
-    client := http.Client{
-    }
+    client := http.Client{ }
 
     resp, err := client.Do(request)
     if err != nil {
