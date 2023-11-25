@@ -7,7 +7,7 @@ import (
 
 func TestIdColumnMissing(t *testing.T) {
     ibuf := bytes.NewBufferString(`Email,FirstName,LastName,MobilePhone,Department`)
-    _, err := ReadFile(ibuf)
+    _, err := readFile(ibuf)
     if err == nil {
         t.Fatalf("Expected error, got %v\n", err)
     }
@@ -16,7 +16,7 @@ func TestIdColumnMissing(t *testing.T) {
 func TestReadser(t *testing.T) {
     ibuf := bytes.NewBufferString(`Id,Email,FirstName,LastName,MobilePhone,Department
     1,some.user@compay.com,some,user,12345678,Sales`)
-    users, err := ReadFile(ibuf)
+    users, err := readFile(ibuf)
     if err != nil {
         t.Fatalf("Expected no error, got %v\n", err)
     }
@@ -54,7 +54,7 @@ func TestReadTwoUsers(t *testing.T) {
     ibuf := bytes.NewBufferString(`Id,Email,FirstName,LastName,MobilePhone,Department
     1,some.user@compay.com,some,user,12345678,Sales 
     2,another.user@compay.com,another,user,87654321,Sales`)
-    users, err := ReadFile(ibuf)
+    users, err := readFile(ibuf)
     if err != nil {
         t.Fatalf("Expected no error, got %v\n", err)
     }
@@ -63,5 +63,3 @@ func TestReadTwoUsers(t *testing.T) {
         t.Fatalf("Expected length 2, got %d\n", len(users))
     }
 }
-
-

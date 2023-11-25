@@ -20,8 +20,12 @@ type DestinationConfig struct {
     ScimToken string `json:"scimapitoken"`
 }
 
+type ReaderConfig interface {
+}
+
 type Config struct { 
-    DestinationConfig DestinationConfig `json:"destinationconfig"`
+    DestinationConfig DestinationConfig `json:"destinationconfig,omitempty"`
+    ReaderConfig ReaderConfig `json:"readerconfig"`
 }
 
 func findConfigurationFile() (*os.File, error) {

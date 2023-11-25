@@ -7,12 +7,18 @@ import (
 	"log"
 	"strings"
 
+	"github.com/jawee/scim-client-go/internal/configuration"
 	"github.com/jawee/scim-client-go/internal/models"
 )
 
-func ReadFile(in io.Reader) ([]models.User, error) {
-
+func GetUsers(config configuration.ReaderConfig) ([]models.User, error) {
     users := make([]models.User, 0)
+    return users, nil;
+}
+
+func readFile(in io.Reader) ([]models.User, error) {
+    users := make([]models.User, 0)
+
     csvReader := csv.NewReader(in)
     headerRow, err := csvReader.Read()
     if err != nil {
