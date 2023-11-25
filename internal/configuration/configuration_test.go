@@ -6,7 +6,7 @@ type MockConfigurationProvider struct {
 }
 
 func (m *MockConfigurationProvider) GetConfigurationJson() ([]byte, error) {
-    return []byte("{\"scimapiurl\":\"asdfafijewora\", \"scimapitoken\":\"asdfafijewora\"}"), nil
+    return []byte("{\"destinationconfig\": {\"scimapiurl\":\"asdfafijewora\", \"scimapitoken\":\"asdfafijewora\"}}"), nil
 }
 
 func TestNewConfiguration(t *testing.T) {
@@ -22,11 +22,14 @@ func TestNewConfiguration(t *testing.T) {
         t.Errorf("Configuration is nil")
     }
 
-    if config.ScimUrl != "asdfafijewora" {
+    // if config.DestinationConfig == nil {
+    //     t.Errorf("DestinationConfig is nil")
+    // }
+    if config.DestinationConfig.ScimUrl != "asdfafijewora" {
         t.Errorf("ScimUrl is not set correctly")
     }
 
-    if config.ScimToken != "asdfafijewora" {
+    if config.DestinationConfig.ScimToken != "asdfafijewora" {
         t.Errorf("ScimToken is not set correctly")
     }
 }

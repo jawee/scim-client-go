@@ -15,9 +15,13 @@ type ConfigurationProvider interface {
 type FileConfigurationProvider struct {
 }
 
-type Config struct { 
+type DestinationConfig struct {
     ScimUrl string `json:"scimapiurl"`
     ScimToken string `json:"scimapitoken"`
+}
+
+type Config struct { 
+    DestinationConfig DestinationConfig `json:"destinationconfig"`
 }
 
 func findConfigurationFile() (*os.File, error) {
