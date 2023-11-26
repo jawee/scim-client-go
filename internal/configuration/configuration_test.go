@@ -22,9 +22,6 @@ func TestNewConfiguration(t *testing.T) {
         t.Errorf("Configuration is nil")
     }
 
-    // if config.DestinationConfig == nil {
-    //     t.Errorf("DestinationConfig is nil")
-    // }
     if config.DestinationConfig.ScimUrl != "asdfafijewora" {
         t.Errorf("ScimUrl is not set correctly")
     }

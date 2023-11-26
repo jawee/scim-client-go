@@ -7,7 +7,6 @@ import (
 	"path"
 )
 
-
 type FileConfigurationProvider struct {
 }
 
