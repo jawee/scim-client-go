@@ -4,15 +4,24 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"log"
+	"os"
 	"strings"
 
 	"github.com/jawee/scim-client-go/internal/configuration"
 	"github.com/jawee/scim-client-go/internal/models"
 )
 
-func GetUsers(config configuration.ReaderConfig) ([]models.User, error) {
-    users := make([]models.User, 0)
+func GetUsers(config configuration.FileReaderConfig) ([]models.User, error) {
+    file, err := os.Open(config.FilePath)
+    if err != nil {
+        return nil, err
+    }
+
+    users, err := readFile(file)
+    if err != nil {
+        return nil, err
+    }
+
     return users, nil;
 }
 
@@ -42,8 +51,6 @@ func readFile(in io.Reader) ([]models.User, error) {
         for i, v := range rec {
             rec[i] = strings.TrimSpace(v)
         }
-
-        log.Printf("%v\n", rec)
 
         user := models.User {
             Id:  rec[indexes[ID]],

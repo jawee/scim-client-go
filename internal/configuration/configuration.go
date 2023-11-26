@@ -5,21 +5,18 @@ import (
 	"log"
 )
 
-type ConfigurationProvider interface {
-    GetConfigurationJson() ([]byte, error)
-}
-
 type DestinationConfig struct {
     ScimUrl string `json:"scimapiurl"`
     ScimToken string `json:"scimapitoken"`
 }
 
-type ReaderConfig interface {
+type FileReaderConfig struct {
+    FilePath string `json:"filepath"`
 }
 
 type Config struct { 
     DestinationConfig DestinationConfig `json:"destinationconfig,omitempty"`
-    ReaderConfig ReaderConfig `json:"readerconfig"`
+    FileReaderConfig FileReaderConfig `json:"filereaderconfig"`
 }
 
 func New(configProvider ConfigurationProvider) (*Config, error) {
