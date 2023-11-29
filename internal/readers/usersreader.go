@@ -2,6 +2,6 @@ package readers
 
 import "github.com/jawee/scim-client-go/internal/models"
 
-type ScimReader interface {
+type UsersReader interface {
     GetUsers() ([]models.User, error)
 }
