@@ -5,7 +5,8 @@ import (
 	// "os"
 	//
 	// "github.com/jawee/scim-client-go/internal/configuration"
-    "github.com/jawee/scim-client-go/internal/scim-api"
+	"github.com/jawee/scim-client-go/internal/models"
+	"github.com/jawee/scim-client-go/internal/scim-api"
 )
 
 func main() {
@@ -13,7 +14,18 @@ func main() {
 
     // configProvider := new(configuration.FileConfigurationProvider)
     // configuration, err := configuration.New(configProvider)
-    scimapi.HandleUser(nil, nil)
+    user := models.User {
+        Id: "asdf",
+        UserName: "some.user@company.name",
+        Email: "some.user@company.name",
+        Department: "clown",
+        PhoneNumber: "12345678",
+        FirstName: "Some",
+        LastName: "User",
+        Active: true,
+        ExternalId: "",
+    }
+    scimapi.HandleUser(&user, nil)
 
     // if err != nil {
     //     log.Printf("%s\n", err)

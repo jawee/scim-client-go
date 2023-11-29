@@ -65,6 +65,8 @@ func getExistingUser(token, userName string) (*models.User, error) {
         return nil, err
     }
 
+    log.Printf("getExistingUser: %s\n", string(body))
+
     var userResponse GetUsersResponse
     err = json.Unmarshal(body, &userResponse)
     if err != nil {
@@ -106,24 +108,35 @@ func HandleUser(newUser *models.User, oldUser *models.User) (ExternalId, error) 
         return ERROR_EXTERNAL_ID, err
     }
     // log.Printf("Got token: '%s'\n", token)
-    requestURL := fmt.Sprintf("%s/users", API_URL)
 
+    _, err = getExistingUser(token, newUser.UserName)
+    if err != nil {
+        log.Printf("Error: %s\n", err)
+        return ERROR_EXTERNAL_ID, err
+    }
+
+    // log.Printf("ExistingUser:\n %s\n", structAsString(user))
+
+    // printExistingUsers(token)
+    return ERROR_EXTERNAL_ID, fmt.Errorf("error");
+}
+
+func printExistingUsers(token string) {
+    requestURL := fmt.Sprintf("%s/users", API_URL)
 
     body, err := makeRequest(token, requestURL, http.MethodGet)
     if err != nil {
         log.Printf("Error: %s\n", err)
-        return ERROR_EXTERNAL_ID, err
+        return
     }
     var getUsersResp GetUsersResponse
     err = json.Unmarshal(body, &getUsersResp)
     if err != nil {
         log.Printf("Error: %s\n", err)
-        return ERROR_EXTERNAL_ID, err
+        return
     }
 
     fmt.Printf("GotUsers:\n %s\n", structAsString(getUsersResp))
-
-    return ERROR_EXTERNAL_ID, fmt.Errorf("error");
 }
 
 func structAsString(model any) string {
