@@ -1,11 +1,13 @@
 package scimapi
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/jawee/scim-client-go/internal/models"
 )
@@ -57,32 +59,69 @@ type getTokenResponse struct {
 	Token string `json:"token"`
 }
 
+func userResponseToUser(resp User) (models.User) {
+    email := ""
+    user := models.User {
+        Id: resp.ExternalID,
+        UserName: resp.UserName,
+        Email: email,
+        PhoneNumber: "",
+        Department: resp.EnterpriseUser.Department,
+        FirstName: resp.Name.GivenName,
+        LastName: resp.Name.FamilyName,
+        Active: resp.Active,
+        ExternalId: resp.ID,
+    }
+
+    return user
+}
+
 func getExistingUser(token, userName string) (*models.User, error) {
     url := fmt.Sprintf("%s/users/?filter=userName+eq+%s", API_URL, userName)
 
-    body, err := makeRequest(token, url, http.MethodGet)
+    body, err := makeRequest(token, url, http.MethodGet, nil)
     if err != nil {
         return nil, err
     }
 
-    log.Printf("getExistingUser: %s\n", string(body))
-
-    var userResponse GetUsersResponse
-    err = json.Unmarshal(body, &userResponse)
+    var usersResponse GetUsersResponse
+    err = json.Unmarshal(body, &usersResponse)
     if err != nil {
         return nil, err
     }
-    return nil, nil
+
+    if usersResponse.TotalResults == 0 {
+        return nil, nil
+    }
+
+    if usersResponse.TotalResults > 1 {
+        return nil, fmt.Errorf("userName %s returned more than 1 result", userName)
+    }
+
+    existingUser := userResponseToUser(usersResponse.Resources[0])
+
+    return &existingUser, nil
 }
 
-func makeRequest(token, url, method string)  ([]byte, error) {
+func makeRequest(token, url, method string, content interface{})  ([]byte, error) {
     var body io.Reader
+
+    if content != nil {
+        contentBytes, err := json.Marshal(content)
+        if err != nil {
+            return nil, err
+        }
+
+        body = bytes.NewBuffer(contentBytes)
+    }
+
     request, err := http.NewRequest(method, url, body)
     if err != nil {
         log.Printf("Error: %s\n", err)
         return nil, err
     }
     request.Header.Set("Authorization", "Bearer " + token)
+    request.Header.Set("Content-Type", "application/json")
 
     client := http.Client{ }
 
@@ -101,19 +140,77 @@ func makeRequest(token, url, method string)  ([]byte, error) {
     return resBody, nil;
 }
 
+func userToScimUser(user *models.User) User {
+    email := Email {
+        "work", true, user.Email,
+    }
+    scimUser := User {
+        EnterpriseUser: EnterpriseUser{}, 
+        Active: user.Active,
+        DisplayName: user.UserName,
+        Emails: []Email{ email },
+        Meta: Meta{
+            ResourceType: "User",
+            Created: time.Now(),
+            LastModified: time.Now(),
+        },
+        Name: Name{
+            Formatted: fmt.Sprintf("%s %s", user.FirstName, user.LastName),
+            FamilyName: user.LastName,
+            GivenName: user.FirstName,
+        },
+        UserName: user.UserName,
+        ExternalID: user.Id,
+        ID: "",
+        Schemas: []string{
+            "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User",
+            "urn:ietf:params:scim:schemas:core:2.0:User",
+        },
+    }
+
+    return scimUser
+}
+
+func createUser(token string, user *models.User) (string, error) {
+    scimUser := userToScimUser(user)
+    url := fmt.Sprintf("%s/users", API_URL)
+    resBytes, err := makeRequest(token, url, http.MethodPost, scimUser)
+    if err != nil {
+        return "", err
+    }
+
+    var createdUser User
+    err = json.Unmarshal(resBytes, &createdUser)
+    if err != nil {
+        return "", err
+    }
+
+    return user.Id, nil
+}
+
 func HandleUser(newUser *models.User, oldUser *models.User) (ExternalId, error) {
     token, err := getToken()
     if err != nil {
         log.Printf("Error: %s\n", err)
         return ERROR_EXTERNAL_ID, err
     }
-    // log.Printf("Got token: '%s'\n", token)
 
-    _, err = getExistingUser(token, newUser.UserName)
+    existingUser, err := getExistingUser(token, newUser.UserName)
     if err != nil {
         log.Printf("Error: %s\n", err)
         return ERROR_EXTERNAL_ID, err
     }
+
+
+    if existingUser == nil {
+        log.Printf("User doesn't exist. Creating. \n")
+        _, err = createUser(token, newUser)
+        if err != nil {
+            log.Printf("ERROR: Create user failed. %s\n", err)
+            return ERROR_EXTERNAL_ID, err
+        }
+    }
+
 
     // log.Printf("ExistingUser:\n %s\n", structAsString(user))
 
@@ -124,7 +221,7 @@ func HandleUser(newUser *models.User, oldUser *models.User) (ExternalId, error) 
 func printExistingUsers(token string) {
     requestURL := fmt.Sprintf("%s/users", API_URL)
 
-    body, err := makeRequest(token, requestURL, http.MethodGet)
+    body, err := makeRequest(token, requestURL, http.MethodGet, nil)
     if err != nil {
         log.Printf("Error: %s\n", err)
         return
