@@ -62,7 +62,7 @@ type getTokenResponse struct {
 func userResponseToUser(resp User) (models.User) {
     email := ""
     user := models.User {
-        Id: resp.ExternalID,
+        Id: resp.ExternalId,
         UserName: resp.UserName,
         Email: email,
         PhoneNumber: "",
@@ -70,7 +70,7 @@ func userResponseToUser(resp User) (models.User) {
         FirstName: resp.Name.GivenName,
         LastName: resp.Name.FamilyName,
         Active: resp.Active,
-        ExternalId: resp.ID,
+        ExternalId: resp.Id,
     }
 
     return user
@@ -160,8 +160,8 @@ func userToScimUser(user *models.User) User {
             GivenName: user.FirstName,
         },
         UserName: user.UserName,
-        ExternalID: user.Id,
-        ID: "",
+        ExternalId: user.Id,
+        Id: "",
         Schemas: []string{
             "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User",
             "urn:ietf:params:scim:schemas:core:2.0:User",
@@ -171,7 +171,7 @@ func userToScimUser(user *models.User) User {
     return scimUser
 }
 
-func createUser(token string, user *models.User) (string, error) {
+func createUser(token string, user *models.User) (ExternalId, error) {
     scimUser := userToScimUser(user)
     url := fmt.Sprintf("%s/users", API_URL)
     resBytes, err := makeRequest(token, url, http.MethodPost, scimUser)
@@ -185,7 +185,7 @@ func createUser(token string, user *models.User) (string, error) {
         return "", err
     }
 
-    return user.Id, nil
+    return ExternalId(createdUser.Id), nil
 }
 
 func HandleUser(newUser *models.User, oldUser *models.User) (ExternalId, error) {
@@ -204,18 +204,20 @@ func HandleUser(newUser *models.User, oldUser *models.User) (ExternalId, error) 
 
     if existingUser == nil {
         log.Printf("User doesn't exist. Creating. \n")
-        _, err = createUser(token, newUser)
+        externalId, err := createUser(token, newUser)
         if err != nil {
             log.Printf("ERROR: Create user failed. %s\n", err)
             return ERROR_EXTERNAL_ID, err
         }
-    }
 
+        existingUser = newUser
+        existingUser.ExternalId = string(externalId)
+    }
 
     // log.Printf("ExistingUser:\n %s\n", structAsString(user))
 
     // printExistingUsers(token)
-    return ERROR_EXTERNAL_ID, fmt.Errorf("error");
+    return ExternalId(existingUser.ExternalId), nil;
 }
 
 func printExistingUsers(token string) {

@@ -5,6 +5,8 @@ import (
 	// "os"
 	//
 	// "github.com/jawee/scim-client-go/internal/configuration"
+	"log"
+
 	"github.com/jawee/scim-client-go/internal/models"
 	"github.com/jawee/scim-client-go/internal/scim-api"
 )
@@ -25,12 +27,14 @@ func main() {
         Active: true,
         ExternalId: "",
     }
-    scimapi.HandleUser(&user, nil)
+    id, err := scimapi.HandleUser(&user, nil)
 
-    // if err != nil {
-    //     log.Printf("%s\n", err)
-    //     os.Exit(1)
-    // }
+    if err != nil {
+        log.Printf("%s\n", err)
+        return
+    }
+
+    log.Printf("ExternalId: %s\n", id)
     //
     // if configuration == nil {
     //     log.Printf("Configuration is nil\n")

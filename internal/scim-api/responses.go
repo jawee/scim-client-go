@@ -41,8 +41,8 @@ type User struct {
     Meta           Meta           `json:"meta,omitempty"`
     Name           Name           `json:"name,omitempty"`
     UserName       string         `json:"userName,omitempty"`
-    ExternalID     string         `json:"externalId,omitempty"`
-    ID             string         `json:"id,omitempty"`
+    ExternalId     string         `json:"externalId,omitempty"`
+    Id             string         `json:"id,omitempty"`
     Schemas        []string       `json:"schemas,omitempty"`
 }
 
@@ -54,8 +54,8 @@ type PostResponse struct {
     Meta           Meta           `json:"meta,omitempty"`
     Name           Name           `json:"name,omitempty"`
     UserName       string         `json:"userName,omitempty"`
-    ExternalID     string         `json:"externalId,omitempty"`
-    ID             string         `json:"id,omitempty"`
+    ExternalId     string         `json:"externalId,omitempty"`
+    Id             string         `json:"id,omitempty"`
     Schemas        []string       `json:"schemas,omitempty"`
 }
 
