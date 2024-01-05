@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/jawee/scim-client-go/internal/models"
@@ -60,12 +61,24 @@ type getTokenResponse struct {
 }
 
 func userResponseToUser(resp User) (models.User) {
-    email := ""
+    var email string
+    for _, v := range resp.Emails {
+        if v.Type == "work" {
+            email = v.Value
+        }
+    }
+
+    var phoneNumber string
+    for _, v := range resp.PhoneNumbers {
+        if v.Type == "work" {
+            phoneNumber = v.Value
+        }
+    }
     user := models.User {
         Id: resp.ExternalId,
         UserName: resp.UserName,
         Email: email,
-        PhoneNumber: "",
+        PhoneNumber: phoneNumber,
         Department: resp.EnterpriseUser.Department,
         FirstName: resp.Name.GivenName,
         LastName: resp.Name.FamilyName,
@@ -144,6 +157,10 @@ func userToScimUser(user *models.User) User {
     email := Email {
         "work", true, user.Email,
     }
+    phoneNumber := PhoneNumber {
+        Type: "work",
+        Value: user.PhoneNumber,
+    }
     scimUser := User {
         EnterpriseUser: EnterpriseUser{}, 
         Active: user.Active,
@@ -159,6 +176,7 @@ func userToScimUser(user *models.User) User {
             FamilyName: user.LastName,
             GivenName: user.FirstName,
         },
+        PhoneNumbers: []PhoneNumber { phoneNumber, },
         UserName: user.UserName,
         ExternalId: user.Id,
         Id: "",
@@ -188,7 +206,7 @@ func createUser(token string, user *models.User) (ExternalId, error) {
     return ExternalId(createdUser.Id), nil
 }
 
-func HandleUser(newUser *models.User, oldUser *models.User) (ExternalId, error) {
+func HandleUser(newUser *models.User) (ExternalId, error) {
     token, err := getToken()
     if err != nil {
         log.Printf("Error: %s\n", err)
@@ -212,12 +230,106 @@ func HandleUser(newUser *models.User, oldUser *models.User) (ExternalId, error) 
 
         existingUser = newUser
         existingUser.ExternalId = string(externalId)
+        return ExternalId(existingUser.ExternalId), nil;
     }
+
+    changes, err := diffUsers(existingUser, newUser)
+
+    patchOperations := []Operations{}
+    for _, v := range changes {
+        log.Printf("Changes in fieldname '%s'\n", v.FieldName)
+        path := getPath(v.FieldName)
+        if path == "" {
+            log.Printf("No path for fieldname '%s'\n", v.FieldName)
+            continue;
+        }
+        op := Operations{
+            Op: "replace",
+            Path: path,
+            Value: v.Value,
+        }
+        patchOperations = append(patchOperations, op)
+    }
+
+    patchUser(token, existingUser.ExternalId, patchOperations)
 
     // log.Printf("ExistingUser:\n %s\n", structAsString(user))
 
     // printExistingUsers(token)
     return ExternalId(existingUser.ExternalId), nil;
+}
+
+func patchUser(token string, id string, patchOperations []Operations) {
+    if len(patchOperations) == 0 {
+        return;
+    }
+    url := fmt.Sprintf("%s/users/%s", API_URL, id)
+    request := PatchRequest {
+        Operations: patchOperations,
+        Schemas: []string{"urn:ietf:params:scim:api:messages:2.0:PatchOp", },
+    }
+
+    
+    // bytes, err := json.Marshal(request)
+    // requestStr := string(bytes)
+    log.Printf("Making patch request: %s\n", structAsString(request))
+
+    res, err := makeRequest(token, url, http.MethodPatch, request)
+    if err != nil {
+        log.Printf("Patch failed: %s\n", err)
+        return 
+    }
+
+    log.Printf("%s\n", string(res))
+}
+
+func getPath(fieldName string) string {
+    s := ""
+    lowerFieldName := strings.ToLower(fieldName)
+    switch lowerFieldName {
+        case "username": 
+            s = "username"
+        case "email":
+            s = "emails[type eq \"work\"].Value"
+        case "firstname":
+            s = "names.givenName"
+        case "lastname":
+            s = "names.familyName"
+        case "phonenumber":
+            s = "phoneNumbers[type eq \"work\"].Value"
+        case "active":
+            s = "active"
+    }
+    return s;
+}
+
+type changes struct {
+    FieldName string
+    Value string
+}
+
+func diffUsers(existingUser *models.User, newUser *models.User) ([]changes, error) {
+    fields := []changes{}
+    if existingUser.Email != newUser.Email {
+        log.Printf("%s != %s\n", existingUser.Email, newUser.Email)
+        fields = append(fields, changes{ FieldName: "email", Value: newUser.Email })
+    }
+
+    if existingUser.FirstName != newUser.FirstName {
+        fields = append(fields, changes{ FieldName: "firstname", Value: newUser.FirstName })
+    }
+
+    if existingUser.LastName != newUser.LastName {
+        fields = append(fields, changes{ FieldName: "lastname", Value: newUser.LastName })
+    }
+
+    if existingUser.PhoneNumber != newUser.PhoneNumber {
+        fields = append(fields, changes{ FieldName: "phonenumber", Value: newUser.PhoneNumber })
+    }
+    if existingUser.Active != newUser.Active {
+        fields = append(fields, changes{ FieldName: "active", Value: fmt.Sprintf("%v", newUser.Active) })
+    }
+    return fields, nil
 }
 
 func printExistingUsers(token string) {

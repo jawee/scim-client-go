@@ -21,13 +21,13 @@ func main() {
         UserName: "some.user@company.name",
         Email: "some.user@company.name",
         Department: "clown",
-        PhoneNumber: "12345678",
+        PhoneNumber: "12345689",
         FirstName: "Some",
         LastName: "User",
         Active: true,
         ExternalId: "",
     }
-    id, err := scimapi.HandleUser(&user, nil)
+    id, err := scimapi.HandleUser(&user)
 
     if err != nil {
         log.Printf("%s\n", err)

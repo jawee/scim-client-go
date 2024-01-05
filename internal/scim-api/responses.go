@@ -16,6 +16,11 @@ type Email struct {
     Value   string `json:"value,omitempty"`
 }
 
+type PhoneNumber struct {
+	Type  string `json:"type"`
+	Value string `json:"value"`
+}
+
 type Meta struct {
     ResourceType string    `json:"resourceType,omitempty"`
     Created      time.Time `json:"created,omitempty"`
@@ -43,6 +48,7 @@ type User struct {
     UserName       string         `json:"userName,omitempty"`
     ExternalId     string         `json:"externalId,omitempty"`
     Id             string         `json:"id,omitempty"`
+    PhoneNumbers   []PhoneNumber  `json;:"phonenumbers,omitempty"`
     Schemas        []string       `json:"schemas,omitempty"`
 }
 
