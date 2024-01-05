@@ -162,7 +162,9 @@ func userToScimUser(user *models.User) User {
         Value: user.PhoneNumber,
     }
     scimUser := User {
-        EnterpriseUser: EnterpriseUser{}, 
+        EnterpriseUser: EnterpriseUser{
+            Department: user.Department,
+        }, 
         Active: user.Active,
         DisplayName: user.UserName,
         Emails: []Email{ email },
@@ -192,11 +194,13 @@ func userToScimUser(user *models.User) User {
 func createUser(token string, user *models.User) (ExternalId, error) {
     scimUser := userToScimUser(user)
     url := fmt.Sprintf("%s/users", API_URL)
+    log.Printf("Sending: %s\n", structAsString(scimUser))
     resBytes, err := makeRequest(token, url, http.MethodPost, scimUser)
     if err != nil {
         return "", err
     }
 
+    log.Printf("Received: %s\n", string(resBytes))
     var createdUser User
     err = json.Unmarshal(resBytes, &createdUser)
     if err != nil {
@@ -263,6 +267,7 @@ func patchUser(token string, id string, patchOperations []Operations) {
     if len(patchOperations) == 0 {
         return;
     }
+
     url := fmt.Sprintf("%s/users/%s", API_URL, id)
     request := PatchRequest {
         Operations: patchOperations,
@@ -292,13 +297,15 @@ func getPath(fieldName string) string {
         case "email":
             s = "emails[type eq \"work\"].Value"
         case "firstname":
-            s = "names.givenName"
+            s = "name.givenName"
         case "lastname":
-            s = "names.familyName"
+            s = "name.familyName"
         case "phonenumber":
             s = "phoneNumbers[type eq \"work\"].Value"
         case "active":
             s = "active"
+        case "department":
+            s = "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:department"
     }
     return s;
 }
@@ -311,7 +318,6 @@ type changes struct {
 func diffUsers(existingUser *models.User, newUser *models.User) ([]changes, error) {
     fields := []changes{}
     if existingUser.Email != newUser.Email {
-        log.Printf("%s != %s\n", existingUser.Email, newUser.Email)
         fields = append(fields, changes{ FieldName: "email", Value: newUser.Email })
     }
 
@@ -328,6 +334,10 @@ func diffUsers(existingUser *models.User, newUser *models.User) ([]changes, erro
     }
     if existingUser.Active != newUser.Active {
         fields = append(fields, changes{ FieldName: "active", Value: fmt.Sprintf("%v", newUser.Active) })
+    }
+    if existingUser.Department != newUser.Department {
+        log.Printf("%s != %s\n", existingUser.Department, newUser.Department)
+        fields = append(fields, changes{ FieldName: "department", Value: newUser.Department, })
     }
     return fields, nil
 }

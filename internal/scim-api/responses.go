@@ -39,7 +39,7 @@ type EnterpriseUser struct {
 }
 
 type User struct {
-    EnterpriseUser EnterpriseUser `json:"urn:ietf:params:scim:schemas:extension:enterprise:2.1:User,omitempty"`
+    EnterpriseUser EnterpriseUser `json:"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User,omitempty"`
     Active         bool           `json:"active,omitempty"`
     DisplayName    string         `json:"displayName,omitempty"`
     Emails         []Email        `json:"emails,omitempty"`
@@ -53,7 +53,7 @@ type User struct {
 }
 
 type PostResponse struct {
-    EnterpriseUser EnterpriseUser `json:"urn:ietf:params:scim:schemas:extension:enterprise:2.1:User,omitempty"`
+    EnterpriseUser EnterpriseUser `json:"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User,omitempty"`
     Active         bool           `json:"active,omitempty"`
     DisplayName    string         `json:"displayName,omitempty"`
     Emails         []Email       `json:"emails,omitempty"`
