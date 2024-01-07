@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/jawee/scim-client-go/internal/models"
@@ -240,57 +239,72 @@ func patchUser(token string, id string, patchOperations []Operations) {
     log.Printf("%s\n", string(res))
 }
 
-func getPath(fieldName string) string {
+
+func getPath(fieldName attribute) string {
     s := ""
-    lowerFieldName := strings.ToLower(fieldName)
-    switch lowerFieldName {
-        case "username": 
+    switch fieldName {
+        case UserNameAttribute: 
             s = "username"
-        case "email":
+        case EmailAttribute:
             s = "emails[type eq \"work\"].Value"
-        case "firstname":
+        case FirstNameAttribute:
             s = "name.givenName"
-        case "lastname":
+        case LastNameAttribute:
             s = "name.familyName"
-        case "phonenumber":
+        case PhoneNumberAttribute:
             s = "phoneNumbers[type eq \"work\"].Value"
-        case "active":
+        case ActiveAttribute:
             s = "active"
-        case "department":
+        case DepartmentAttribute:
             s = "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:department"
     }
     return s;
 }
 
 type changes struct {
-    FieldName string
+    FieldName attribute
     Value string
 }
+
+type attribute string
+
+const (
+    UserNameAttribute attribute = "username"
+    IdAttribute attribute = "id"
+    DepartmentAttribute attribute = "department"
+    PhoneNumberAttribute attribute = "phonenumber"
+    EmailAttribute attribute = "email"
+    FirstNameAttribute attribute =  "firstname"
+    LastNameAttribute attribute =  "lastname"
+    ActiveAttribute attribute =  "active"
+)
 
 func diffUsers(existingUser *models.User, newUser *models.User) ([]changes, error) {
     fields := []changes{}
     if existingUser.Email != newUser.Email {
-        fields = append(fields, changes{ FieldName: "email", Value: newUser.Email })
+        fields = append(fields, changes{ FieldName: EmailAttribute, Value: newUser.Email })
     }
 
     if existingUser.FirstName != newUser.FirstName {
-        fields = append(fields, changes{ FieldName: "firstname", Value: newUser.FirstName })
+        fields = append(fields, changes{ FieldName: FirstNameAttribute, Value: newUser.FirstName })
     }
 
     if existingUser.LastName != newUser.LastName {
-        fields = append(fields, changes{ FieldName: "lastname", Value: newUser.LastName })
+        fields = append(fields, changes{ FieldName: LastNameAttribute, Value: newUser.LastName })
     }
 
     if existingUser.PhoneNumber != newUser.PhoneNumber {
-        fields = append(fields, changes{ FieldName: "phonenumber", Value: newUser.PhoneNumber })
+        fields = append(fields, changes{ FieldName: PhoneNumberAttribute, Value: newUser.PhoneNumber })
     }
+
     if existingUser.Active != newUser.Active {
-        fields = append(fields, changes{ FieldName: "active", Value: fmt.Sprintf("%v", newUser.Active) })
+        fields = append(fields, changes{ FieldName: ActiveAttribute, Value: fmt.Sprintf("%v", newUser.Active) })
     }
+
     if existingUser.Department != newUser.Department {
-        log.Printf("%s != %s\n", existingUser.Department, newUser.Department)
-        fields = append(fields, changes{ FieldName: "department", Value: newUser.Department, })
+        fields = append(fields, changes{ FieldName: DepartmentAttribute, Value: newUser.Department, })
     }
+
     return fields, nil
 }
 
