@@ -215,9 +215,6 @@ func HandleUser(newUser *models.User) (ExternalId, error) {
 
     patchUser(token, existingUser.ExternalId, patchOperations)
 
-    // log.Printf("ExistingUser:\n %s\n", structAsString(user))
-
-    // printExistingUsers(token)
     return ExternalId(existingUser.ExternalId), nil;
 }
 
@@ -232,9 +229,6 @@ func patchUser(token string, id string, patchOperations []Operations) {
         Schemas: []string{"urn:ietf:params:scim:api:messages:2.0:PatchOp", },
     }
 
-    
-    // bytes, err := json.Marshal(request)
-    // requestStr := string(bytes)
     log.Printf("Making patch request: %s\n", structAsString(request))
 
     res, err := makeRequest(token, url, http.MethodPatch, request)
