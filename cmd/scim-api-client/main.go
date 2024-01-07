@@ -53,8 +53,12 @@ func main() {
     }
 
     for _, user := range toDelete {
-        //TODO: handle delete
-        log.Printf("ToDelete: %v\n", user)
+        succ, err := scimapi.DeleteUser(&user)
+        if err != nil { 
+            log.Printf("Delete error for user %s: %s\n", user.UserName, err)
+        } else {
+            log.Printf("Delete result for user %s: %v\n", user.UserName, succ)
+        }
     }
 }
 
@@ -81,7 +85,7 @@ func getDbUsers() (map[string]models.User, error) {
         },
         {
             Id: "2",
-            UserName: "other.user@company.anem",
+            UserName: "other.user@company.name",
             Email: "other.user@company.name",
             Department: "jester",
             PhoneNumber: "87654321",
@@ -92,7 +96,7 @@ func getDbUsers() (map[string]models.User, error) {
         },
         {
             Id: "3",
-            UserName: "third.user@company.anem",
+            UserName: "third.user@company.name",
             Email: "third.user@company.name",
             Department: "jester",
             PhoneNumber: "87654321",
@@ -103,7 +107,7 @@ func getDbUsers() (map[string]models.User, error) {
         },
         {
             Id: "4",
-            UserName: "fourth.user@company.anem",
+            UserName: "fourth.user@company.name",
             Email: "fourth.user@company.name",
             Department: "",
             PhoneNumber: "",

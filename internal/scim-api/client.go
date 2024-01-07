@@ -167,6 +167,30 @@ func createUser(token string, user *models.User) (ExternalId, error) {
     return ExternalId(createdUser.Id), nil
 }
 
+func DeleteUser(user *models.User) (bool, error) {
+    token, err := getToken()
+    if err != nil {
+        log.Printf("Error: %s\n", err)
+        return false, err
+    }
+
+    existingUser, err := getExistingUser(token, user.UserName)
+    if err != nil {
+        log.Printf("Error: %s\n", err)
+        return false, err
+    }
+
+    if existingUser == nil {
+        return true, fmt.Errorf("No user for %s found\n", user.UserName)
+    }
+
+    err = deleteUser(token, existingUser.ExternalId)
+    if err != nil {
+        return false, err
+    }
+    return true, nil
+}
+
 func HandleUser(newUser *models.User) (ExternalId, error) {
     token, err := getToken()
     if err != nil {
@@ -214,6 +238,18 @@ func HandleUser(newUser *models.User) (ExternalId, error) {
     patchUser(token, existingUser.ExternalId, patchOperations)
 
     return ExternalId(existingUser.ExternalId), nil;
+}
+
+func deleteUser(token string, id string) error {
+    url := fmt.Sprintf("%s/users/%s", API_URL, id)
+    
+    _, err := makeRequest(token, url, http.MethodDelete, nil)
+    if err != nil {
+        log.Printf("Patch failed: %s\n", err)
+        return err
+    }
+
+    return nil
 }
 
 func patchUser(token string, id string, patchOperations []Operations) {

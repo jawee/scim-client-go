@@ -24,7 +24,7 @@ func getSourceUsers() []models.User {
         },
         {
             Id: "2",
-            UserName: "other.user@company.anem",
+            UserName: "other.user@company.name",
             Email: "other.user@company.name",
             Department: "jester",
             PhoneNumber: "87654321",
@@ -35,7 +35,7 @@ func getSourceUsers() []models.User {
         },
         {
             Id: "3",
-            UserName: "third.user@company.anem",
+            UserName: "third.user@company.name",
             Email: "third.user@company.name",
             Department: "jester",
             PhoneNumber: "87654321",
