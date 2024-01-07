@@ -11,7 +11,8 @@ import (
 	"github.com/jawee/scim-client-go/internal/models"
 )
 
-func GetUsers(config configuration.FileReaderConfig) ([]models.User, error) {
+type CsvReader struct {}
+func (c *CsvReader) GetUsers(config configuration.FileReaderConfig) ([]models.User, error) {
     file, err := os.Open(config.FilePath)
     if err != nil {
         return nil, err

@@ -151,13 +151,13 @@ func userToScimUser(user *models.User) User {
 func createUser(token string, user *models.User) (ExternalId, error) {
     scimUser := userToScimUser(user)
     url := fmt.Sprintf("%s/users", API_URL)
-    log.Printf("Sending: %s\n", structAsString(scimUser))
+    // log.Printf("Sending: %s\n", structAsString(scimUser))
     resBytes, err := makeRequest(token, url, http.MethodPost, scimUser)
     if err != nil {
         return "", err
     }
 
-    log.Printf("Received: %s\n", string(resBytes))
+    // log.Printf("Received: %s\n", string(resBytes))
     var createdUser User
     err = json.Unmarshal(resBytes, &createdUser)
     if err != nil {
@@ -180,9 +180,8 @@ func HandleUser(newUser *models.User) (ExternalId, error) {
         return ERROR_EXTERNAL_ID, err
     }
 
-
     if existingUser == nil {
-        log.Printf("User doesn't exist. Creating. \n")
+        log.Printf("User '%s' doesn't exist. Creating. \n", newUser.Id)
         externalId, err := createUser(token, newUser)
         if err != nil {
             log.Printf("ERROR: Create user failed. %s\n", err)
