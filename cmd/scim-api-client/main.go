@@ -3,14 +3,134 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/jawee/scim-client-go/internal/models"
 	"github.com/jawee/scim-client-go/internal/readers"
 	scimapi "github.com/jawee/scim-client-go/internal/scim-api"
 )
 
+func usage() {
+	fmt.Printf("Usage:\n    scim-client [flags]\n")
+	fmt.Printf("Flags:\n")
+    fmt.Printf("    %s        %s\n", "-h, --help", "Print help")
+    fmt.Printf("    %s      %s\n", "-c, --config", "Path to config directory")
+    fmt.Printf("    %s       %s\n", "-i, --input", "Source of users to import")
+}
+
+type FlagType int
+
+const (
+    Invalid FlagType = iota
+    Config
+    Input
+)
+
+type Flag struct {
+   Type FlagType
+   Value string
+}
+
+func getFlag(t string, v string) (Flag, error) {
+    var flagType FlagType;
+    switch t {
+    case "--config":
+        flagType = Config
+    case "-c":
+        flagType = Config
+    case "-i":
+        flagType = Input
+    case "--input":
+        flagType = Input
+    default:
+        flagType = Invalid 
+    }
+
+    if flagType == Invalid {
+        return Flag{}, fmt.Errorf("Invalid flag")
+    }
+
+    flag := Flag{
+        Type: flagType,
+        Value: v,
+    }
+
+    return flag, nil
+}
+func ParseFlags(args []string) ([]Flag, error) {
+    res := []Flag{}
+    if len(args) % 2 != 0 {
+        return nil, fmt.Errorf("Expects an even number of arguments")
+    }
+    for i := 0; i < len(args); i += 2 {
+        flag, err := getFlag(args[i], args[i+1])
+        if err != nil {
+            return nil, err
+        }
+        res = append(res, flag)
+    }
+
+    return res, nil
+}
+
+func getConfigPath(flags []Flag) (string, error) {
+    defaultPath, err := os.UserConfigDir()
+    if err != nil {
+        return "", err
+    }
+    customPath := "" 
+    for _, v := range flags {
+        if v.Type == Config {
+            customPath = v.Value
+        }
+    }
+
+    if customPath == "" {
+        customPath = defaultPath + "/scimclient"
+    }
+
+    _, err = os.Stat(customPath)
+    if os.IsNotExist(err) {
+        fmt.Printf("ERROR: directory does not exist\n")
+        return "", err
+    }
+
+    if err != nil {
+        return "", err
+    }
+
+    return customPath, nil
+}
+
 func main() {
-    //TODO: make configureable through args and/or config file
+    args := os.Args[1:]
+    if len(args) == 0 {
+        fmt.Printf("ERROR: No flags provided\n")
+        usage()
+        os.Exit(1)
+    }
+
+    flags, err := ParseFlags(args)
+    if err != nil {
+        fmt.Printf("ERROR: %s\n", err)
+        usage()
+        os.Exit(1)
+    }
+
+    if len(flags) == 0 {
+        fmt.Printf("ERROR: No flags parsed\n")
+        usage()
+        os.Exit(1)
+    }
+    // fmt.Printf("Len: %d, args: %v\n", len(args), args)
+
+    configPath, err := getConfigPath(flags)
+    if err != nil {
+        fmt.Printf("ERROR: %s\n", err)
+        os.Exit(1)
+    }
+    fmt.Printf("%s\n", configPath)
+    return
     reader := readers.MemoryReader{}
 
     sourceUsers, err := reader.GetUsers()
