@@ -7,6 +7,7 @@ import (
 
 	"github.com/jawee/scim-client-go/internal/models"
 	"github.com/jawee/scim-client-go/internal/readers"
+	"github.com/jawee/scim-client-go/internal/flags"
 	scimapi "github.com/jawee/scim-client-go/internal/scim-api"
 )
 
@@ -18,69 +19,14 @@ func usage() {
     fmt.Printf("    %s       %s\n", "-i, --input", "Source of users to import")
 }
 
-type FlagType int
-
-const (
-    Invalid FlagType = iota
-    Config
-    Input
-)
-
-type Flag struct {
-   Type FlagType
-   Value string
-}
-
-func getFlag(t string, v string) (Flag, error) {
-    var flagType FlagType;
-    switch t {
-    case "--config":
-        flagType = Config
-    case "-c":
-        flagType = Config
-    case "-i":
-        flagType = Input
-    case "--input":
-        flagType = Input
-    default:
-        flagType = Invalid 
-    }
-
-    if flagType == Invalid {
-        return Flag{}, fmt.Errorf("Invalid flag")
-    }
-
-    flag := Flag{
-        Type: flagType,
-        Value: v,
-    }
-
-    return flag, nil
-}
-func ParseFlags(args []string) ([]Flag, error) {
-    res := []Flag{}
-    if len(args) % 2 != 0 {
-        return nil, fmt.Errorf("Expects an even number of arguments")
-    }
-    for i := 0; i < len(args); i += 2 {
-        flag, err := getFlag(args[i], args[i+1])
-        if err != nil {
-            return nil, err
-        }
-        res = append(res, flag)
-    }
-
-    return res, nil
-}
-
-func getConfigPath(flags []Flag) (string, error) {
+func getConfigPath(f []flags.Flag) (string, error) {
     defaultPath, err := os.UserConfigDir()
     if err != nil {
         return "", err
     }
     customPath := "" 
-    for _, v := range flags {
-        if v.Type == Config {
+    for _, v := range f {
+        if v.Type == flags.Config {
             customPath = v.Value
         }
     }
@@ -110,7 +56,7 @@ func main() {
         os.Exit(1)
     }
 
-    flags, err := ParseFlags(args)
+    flags, err := flags.ParseFlags(args)
     if err != nil {
         fmt.Printf("ERROR: %s\n", err)
         usage()
