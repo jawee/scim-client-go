@@ -31,7 +31,7 @@ func getFlag(t string, v string) (Flag, error) {
     }
 
     if flagType == Invalid {
-        return Flag{}, fmt.Errorf("Invalid flag")
+        return Flag{}, fmt.Errorf("Invalid flag %s", t)
     }
 
     flag := Flag{
