@@ -9,7 +9,7 @@ type FlagType int
 
 const (
     Invalid FlagType = iota
-    Config
+    ConfigDir
     Input
     Delta
 )
@@ -22,10 +22,10 @@ type Flag struct {
 func getFlagType(t string) FlagType {
     var flagType FlagType;
     switch t {
-    case "--config":
-        flagType = Config
+    case "--configDir":
+        flagType = ConfigDir
     case "-c":
-        flagType = Config
+        flagType = ConfigDir
     case "-i":
         flagType = Input
     case "--input":
@@ -42,7 +42,7 @@ func getFlagType(t string) FlagType {
 }
 
 var numberOfArgumentsMap = map[FlagType]int{
-    Config: 1,
+    ConfigDir: 1,
     Input: 1,
     Delta: 0,
 }

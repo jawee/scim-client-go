@@ -23,7 +23,7 @@ func TestGetConfigPathRelative(t *testing.T) {
         expectedPath = path.Join(exPath, cust)
     }
 
-    path, err := getConfigPath([]flags.Flag{ { Type: flags.Config, Value: configPath }})
+    path, err := getConfigPath([]flags.Flag{ { Type: flags.ConfigDir, Value: configPath }})
     if err != nil {
         t.Fatalf("Err: '%s'\n", err)
     }
@@ -36,7 +36,7 @@ func TestGetConfigPathRelative(t *testing.T) {
 func TestGetConfigPathAbsolute(t *testing.T) {
     configPath := "/config"
 
-    path, err := getConfigPath([]flags.Flag{ { Type: flags.Config, Value: configPath }})
+    path, err := getConfigPath([]flags.Flag{ { Type: flags.ConfigDir, Value: configPath }})
     if err != nil {
         t.Fatalf("Err: '%s'\n", err)
     }

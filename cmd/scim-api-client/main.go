@@ -18,7 +18,7 @@ func usage() {
 	fmt.Printf("Usage:\n    scim-client [flags]\n")
 	fmt.Printf("Flags:\n")
     fmt.Printf("    %s        %s\n", "-h, --help", "Print help")
-    fmt.Printf("    %s      %s\n", "-c, --config", "Path to config directory")
+    fmt.Printf("    %s      %s\n", "-c, --configDir", "Path to config directory")
     fmt.Printf("    %s       %s\n", "-i, --input", "Source of users to import")
     fmt.Printf("    %s       %s\n", "-d, --delta", "Delta import, only users included in this run")
 }
@@ -30,7 +30,7 @@ func getConfigPath(f []flags.Flag) (string, error) {
     }
     customPath := "" 
     for _, v := range f {
-        if v.Type == flags.Config {
+        if v.Type == flags.ConfigDir {
             customPath = v.Value
         }
     }
