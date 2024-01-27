@@ -49,7 +49,7 @@ var numberOfArgumentsMap = map[FlagType]int{
 
 func ParseFlags(args []string) ([]Flag, error) {
     res := []Flag{}
-    //TODO: should accept flags without arguments
+
     for i := 0; i < len(args); {
         flagType := getFlagType(args[i])
         if flagType == Invalid {
@@ -61,7 +61,6 @@ func ParseFlags(args []string) ([]Flag, error) {
         if arguments == 0 {
             flag := Flag{Type: flagType}
             res = append(res, flag)
-            continue
         }
         if arguments == 1 {
             if i+1 >= len(args) {
@@ -74,7 +73,7 @@ func ParseFlags(args []string) ([]Flag, error) {
             res = append(res, flag)
         }
 
-        i += arguments
+        i += arguments + 1
     }
 
     return res, nil
