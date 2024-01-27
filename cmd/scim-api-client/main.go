@@ -9,7 +9,6 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/jawee/scim-client-go/internal/flags"
 	"github.com/jawee/scim-client-go/internal/models"
