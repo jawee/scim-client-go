@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
+	"path/filepath"
+	"strings"
 
+	"github.com/jawee/scim-client-go/internal/flags"
 	"github.com/jawee/scim-client-go/internal/models"
 	"github.com/jawee/scim-client-go/internal/readers"
-	"github.com/jawee/scim-client-go/internal/flags"
 	scimapi "github.com/jawee/scim-client-go/internal/scim-api"
 )
 
@@ -36,14 +39,17 @@ func getConfigPath(f []flags.Flag) (string, error) {
         customPath = defaultPath + "/scimclient"
     }
 
-    _, err = os.Stat(customPath)
-    if os.IsNotExist(err) {
-        fmt.Printf("ERROR: directory does not exist\n")
+    ex, err := os.Executable()
+    if err != nil {
         return "", err
     }
 
-    if err != nil {
-        return "", err
+    exPath := filepath.Dir(ex)
+    exPath, _ = strings.CutSuffix(exPath, "/")
+
+    cust, foundPrefix := strings.CutPrefix(customPath, "./"); 
+    if foundPrefix {
+        customPath = path.Join(exPath, cust)
     }
 
     return customPath, nil
@@ -76,6 +82,17 @@ func main() {
         fmt.Printf("ERROR: %s\n", err)
         os.Exit(1)
     }
+
+    _, err = os.Stat(configPath)
+    if os.IsNotExist(err) {
+        fmt.Printf("ERROR: directory does not exist\n")
+        os.Exit(1)
+    }
+
+    if err != nil {
+        os.Exit(1)
+    }
+
     fmt.Printf("%s\n", configPath)
     return
     reader := readers.MemoryReader{}
