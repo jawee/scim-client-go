@@ -10,8 +10,8 @@ func TestParseFlagsErrors(t *testing.T) {
         args     []string
         expected string
     }{
-        {args: []string{"-c"}, expected: "Expects an even number of arguments" },
         {args: []string{"-a", "b"}, expected: "Invalid flag -a" },
+        {args: []string{"-c"}, expected: "Missing argument for -c" },
     }
 
     for _, v := range testCases {
