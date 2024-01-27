@@ -29,9 +29,8 @@ func TestGetConfigPathRelative(t *testing.T) {
     }
 
     if path != expectedPath {
-        t.Fatalf("Got '%s', expected '%s'\n", path, "./config")
+        t.Fatalf("Got '%s', expected '%s'\n", path, expectedPath)
     }
-
 }
 
 func TestGetConfigPathAbsolute(t *testing.T) {
@@ -43,7 +42,20 @@ func TestGetConfigPathAbsolute(t *testing.T) {
     }
 
     if path != configPath {
-        t.Fatalf("Got '%s', expected '%s'\n", path, "./config")
+        t.Fatalf("Got '%s', expected '%s'\n", path, configPath)
+    }
+}
+
+func TestGetConfigPathDefault(t *testing.T) {
+    defaultPath, err := os.UserConfigDir()
+    defaultPath = defaultPath + "/scimclient"
+
+    path, err := getConfigPath([]flags.Flag{})
+    if err != nil {
+        t.Fatalf("Err: '%s'\n", err)
     }
 
+    if path != defaultPath {
+        t.Fatalf("Got '%s', expected '%s'\n", path, "./config")
+    }
 }
