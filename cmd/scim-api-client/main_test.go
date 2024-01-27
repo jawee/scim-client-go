@@ -48,7 +48,7 @@ func TestGetConfigPathAbsolute(t *testing.T) {
 
 func TestGetConfigPathDefault(t *testing.T) {
     defaultPath, err := os.UserConfigDir()
-    defaultPath = defaultPath + "/scimclient"
+    defaultPath = path.Join(defaultPath, "/scimclient")
 
     path, err := getConfigPath([]flags.Flag{})
     if err != nil {
