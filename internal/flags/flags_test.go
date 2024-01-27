@@ -30,9 +30,15 @@ func TestParseFlagsSuccess(t *testing.T) {
         args     []string
         expected map[FlagType]Flag
     }{
-        {args: []string{"-d"}, expected: map[FlagType]Flag{ Delta: {Type: Delta}}}, 
-        {args: []string{"--delta"}, expected: map[FlagType]Flag{ Delta: {Type: Delta}}}, 
-        {args: []string{"-c", "/path/to/config"}, expected: map[FlagType]Flag{ Config: {Type: Config, Value: "/path/to/config"}}}, 
+        {args: []string{"-d"}, expected: map[FlagType]Flag{ Delta: {Type: Delta} }}, 
+        {args: []string{"--delta"}, expected: map[FlagType]Flag{ Delta: {Type: Delta} }}, 
+        {args: []string{"-c", "/path/to/config"}, expected: map[FlagType]Flag{ Config: {Type: Config, Value: "/path/to/config"} }}, 
+        {args: []string{"--config", "/path/to/config"}, expected: map[FlagType]Flag{ Config: {Type: Config, Value: "/path/to/config"} }}, 
+        {args: []string{"-c", "/path/to/config", "-d"}, expected: map[FlagType]Flag{ 
+            Config: {Type: Config, Value: "/path/to/config"},
+            Delta: {Type: Delta },
+        },
+        }, 
     }
 
     for _, v := range testCases {
