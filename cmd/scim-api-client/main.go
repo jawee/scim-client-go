@@ -17,6 +17,7 @@ func usage() {
     fmt.Printf("    %s        %s\n", "-h, --help", "Print help")
     fmt.Printf("    %s      %s\n", "-c, --config", "Path to config directory")
     fmt.Printf("    %s       %s\n", "-i, --input", "Source of users to import")
+    fmt.Printf("    %s       %s\n", "-d, --delta", "Delta import, only users included in this run")
 }
 
 func getConfigPath(f []flags.Flag) (string, error) {
