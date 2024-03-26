@@ -40,7 +40,7 @@ func getSourceUsers() []models.User {
             Email: "third.user@company.name",
             Department: "jester",
             PhoneNumber: "87654321",
-            FirstName: "Other",
+            FirstName: "Third",
             LastName: "User",
             Active: true,
             ExternalId: "",
