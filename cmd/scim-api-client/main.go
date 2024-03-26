@@ -9,6 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/jawee/scim-client-go/internal/flags"
 	"github.com/jawee/scim-client-go/internal/models"
@@ -107,69 +108,96 @@ func main() {
     // return
     reader := readers.MemoryReader{}
 
-    dbUsers, err := getDbUsers()
-    if err != nil {
-        fmt.Printf("ERROR: %s\n", err)
-        os.Exit(1)
-    }
+    dbUsers := getDbUsers()
 
     services.ExecuteSync(reader, dbUsers)
 }
 
-func getDbUsers() (map[string]models.User, error) {
-    users := []models.User{
+func getDbUsers() (map[string]models.UserHistory) {
+    users := []models.UserHistory{
         {
-            Id: "1",
             UserName: "some.user@company.name",
-            Email: "some.user@company.name",
-            Department: "clown",
-            PhoneNumber: "12345678",
-            FirstName: "Some",
-            LastName: "User",
-            Active: true,
-            ExternalId: "",
+            ErrorMessages: nil,
+            LastSync: time.Now().Add(time.Duration(-120)),
         },
         {
-            Id: "2",
             UserName: "other.user@company.name",
-            Email: "other.user@company.name",
-            Department: "jester",
-            PhoneNumber: "87654321",
-            FirstName: "Other",
-            LastName: "User",
-            Active: true,
-            ExternalId: "",
+            ErrorMessages: nil,
+            LastSync: time.Now().Add(time.Duration(-120)),
         },
         {
-            Id: "3",
             UserName: "third.user@company.name",
-            Email: "third.user@company.name",
-            Department: "jester",
-            PhoneNumber: "87654321",
-            FirstName: "Third",
-            LastName: "User",
-            Active: true,
-            ExternalId: "",
+            ErrorMessages: nil,
+            LastSync: time.Now().Add(time.Duration(-120)),
         },
         {
-            Id: "4",
             UserName: "fourth.user@company.name",
-            Email: "fourth.user@company.name",
-            Department: "",
-            PhoneNumber: "",
-            FirstName: "Fourth",
-            LastName: "User",
-            Active: true,
-            ExternalId: "",
+            ErrorMessages: nil,
+            LastSync: time.Now().Add(time.Duration(-120)),
         },
     }
 
-    m := map[string]models.User{}
+    m := map[string]models.UserHistory{}
     for _, v := range users {
-        m[v.Id] = v
+        m[v.UserName] = v
     }
-    return m, nil
+    return m
 }
+
+// func getDbUsers() (map[string]models.User, error) {
+//     users := []models.User{
+//         {
+//             Id: "1",
+//             UserName: "some.user@company.name",
+//             Email: "some.user@company.name",
+//             Department: "clown",
+//             PhoneNumber: "12345678",
+//             FirstName: "Some",
+//             LastName: "User",
+//             Active: true,
+//             ExternalId: "",
+//         },
+//         {
+//             Id: "2",
+//             UserName: "other.user@company.name",
+//             Email: "other.user@company.name",
+//             Department: "jester",
+//             PhoneNumber: "87654321",
+//             FirstName: "Other",
+//             LastName: "User",
+//             Active: true,
+//             ExternalId: "",
+//         },
+//         {
+//             Id: "3",
+//             UserName: "third.user@company.name",
+//             Email: "third.user@company.name",
+//             Department: "jester",
+//             PhoneNumber: "87654321",
+//             FirstName: "Third",
+//             LastName: "User",
+//             Active: true,
+//             ExternalId: "",
+//         },
+//         {
+//             Id: "4",
+//             UserName: "fourth.user@company.name",
+//             Email: "fourth.user@company.name",
+//             Department: "",
+//             PhoneNumber: "",
+//             FirstName: "Fourth",
+//             LastName: "User",
+//             Active: true,
+//             ExternalId: "",
+//         },
+//     }
+//
+//     m := map[string]models.User{}
+//     for _, v := range users {
+//         m[v.Id] = v
+//     }
+//     return m, nil
+// }
 
 func getDbUserById(id string) (*models.User, error) {
     users := []models.User {

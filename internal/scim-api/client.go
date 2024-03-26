@@ -167,21 +167,21 @@ func createUser(token string, user *models.User) (ExternalId, error) {
     return ExternalId(createdUser.Id), nil
 }
 
-func DeleteUser(user *models.User) (bool, error) {
+func DeleteUser(userName string) (bool, error) {
     token, err := getToken()
     if err != nil {
         log.Printf("Error: %s\n", err)
         return false, err
     }
 
-    existingUser, err := getExistingUser(token, user.UserName)
+    existingUser, err := getExistingUser(token, userName)
     if err != nil {
         log.Printf("Error: %s\n", err)
         return false, err
     }
 
     if existingUser == nil {
-        return true, fmt.Errorf("No user for %s found\n", user.UserName)
+        return true, fmt.Errorf("No user for %s found\n", userName)
     }
 
     err = deleteUser(token, existingUser.ExternalId)

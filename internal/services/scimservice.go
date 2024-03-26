@@ -11,12 +11,12 @@ import (
 func makeMap(sourceUsers []models.User) map[string]models.User {
     usersMap := map[string]models.User{}
     for _, v := range sourceUsers {
-        usersMap[v.Id] = v
+        usersMap[v.UserName] = v
     }
     return usersMap
 }
 
-func ExecuteSync(reader readers.UsersReader, dbUsers map[string]models.User) {
+func ExecuteSync(reader readers.UsersReader, dbUsers map[string]models.UserHistory) {
     sourceUsers, err := reader.GetUsers()
     if err != nil {
         log.Printf("%s\n", err)
@@ -26,7 +26,7 @@ func ExecuteSync(reader readers.UsersReader, dbUsers map[string]models.User) {
     sourceUsersMap := makeMap(sourceUsers)
 
     toHandle := []models.User{}
-    toDelete := []models.User{}
+    toDelete := []string{}
 
     for _, v := range sourceUsers {
         toHandle = append(toHandle, v)
@@ -34,7 +34,7 @@ func ExecuteSync(reader readers.UsersReader, dbUsers map[string]models.User) {
 
     for k, v := range dbUsers {
         if _, ok := sourceUsersMap[k]; !ok {
-            toDelete = append(toDelete, v)
+            toDelete = append(toDelete, v.UserName)
         }
     }
 
@@ -48,12 +48,12 @@ func ExecuteSync(reader readers.UsersReader, dbUsers map[string]models.User) {
         log.Printf("ExternalId: %s\n", id)
     }
 
-    for _, user := range toDelete {
-        succ, err := scimapi.DeleteUser(&user)
+    for _, userName := range toDelete {
+        succ, err := scimapi.DeleteUser(userName)
         if err != nil { 
-            log.Printf("Delete error for user %s: %s\n", user.UserName, err)
+            log.Printf("Delete error for user %s: %s\n", userName, err)
         } else {
-            log.Printf("Delete result for user %s: %v\n", user.UserName, succ)
+            log.Printf("Delete result for user %s: %v\n", userName, succ)
         }
     }
 }
