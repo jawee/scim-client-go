@@ -12,6 +12,7 @@ import (
 )
 
 type CsvReader struct {}
+
 func (c *CsvReader) GetUsers(config configuration.FileReaderConfig) ([]models.User, error) {
     file, err := os.Open(config.FilePath)
     if err != nil {

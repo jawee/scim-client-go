@@ -13,7 +13,7 @@ import (
 	"github.com/jawee/scim-client-go/internal/flags"
 	"github.com/jawee/scim-client-go/internal/models"
 	"github.com/jawee/scim-client-go/internal/readers"
-	scimapi "github.com/jawee/scim-client-go/internal/scim-api"
+	"github.com/jawee/scim-client-go/internal/services"
 )
 
 func usage() {
@@ -104,64 +104,16 @@ func main() {
         os.Exit(1)
     }
     fmt.Printf("%s\n", string(configFile))
-    return
+    // return
     reader := readers.MemoryReader{}
 
-    sourceUsers, err := reader.GetUsers()
-    if err != nil {
-        log.Printf("%s\n", err)
-        return
-    }
-
-    sourceUsersMap := makeMap(sourceUsers)
     dbUsers, err := getDbUsers()
     if err != nil {
+        fmt.Printf("ERROR: %s\n", err)
+        os.Exit(1)
     }
 
-    if err != nil {
-        log.Printf("%s\n", err)
-        return
-    }
-
-    toHandle := []models.User{}
-    toDelete := []models.User{}
-
-    for _, v := range sourceUsers {
-        toHandle = append(toHandle, v)
-    }
-
-    for k, v := range dbUsers {
-        if _, ok := sourceUsersMap[k]; !ok {
-            toDelete = append(toDelete, v)
-        }
-    }
-
-    for _, user := range toHandle {
-        id, err := scimapi.HandleUser(&user)
-
-        if err != nil {
-            log.Printf("%s\n", err)
-            return
-        }
-        log.Printf("ExternalId: %s\n", id)
-    }
-
-    for _, user := range toDelete {
-        succ, err := scimapi.DeleteUser(&user)
-        if err != nil { 
-            log.Printf("Delete error for user %s: %s\n", user.UserName, err)
-        } else {
-            log.Printf("Delete result for user %s: %v\n", user.UserName, succ)
-        }
-    }
-}
-
-func makeMap(sourceUsers []models.User) map[string]models.User {
-    usersMap := map[string]models.User{}
-    for _, v := range sourceUsers {
-        usersMap[v.Id] = v
-    }
-    return usersMap
+    services.ExecuteSync(reader, dbUsers)
 }
 
 func getDbUsers() (map[string]models.User, error) {
@@ -218,6 +170,7 @@ func getDbUsers() (map[string]models.User, error) {
     }
     return m, nil
 }
+
 func getDbUserById(id string) (*models.User, error) {
     users := []models.User {
         {

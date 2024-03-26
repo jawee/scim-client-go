@@ -3,7 +3,8 @@ package readers
 import "github.com/jawee/scim-client-go/internal/models"
 
 type MemoryReader struct {}
-func (m *MemoryReader) GetUsers() ([]models.User, error) {
+
+func (m MemoryReader) GetUsers() ([]models.User, error) {
     users := getSourceUsers()
 
     return users, nil
