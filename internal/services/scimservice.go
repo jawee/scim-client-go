@@ -16,7 +16,7 @@ func makeMap(sourceUsers []models.User) map[string]models.User {
     return usersMap
 }
 
-func ExecuteSync(reader readers.UsersReader, dbUsers map[string]models.UserHistory) {
+func ExecuteSync(reader readers.UsersReader, usersHistory map[string]models.UserHistory) {
     sourceUsers, err := reader.GetUsers()
     if err != nil {
         log.Printf("%s\n", err)
@@ -32,7 +32,7 @@ func ExecuteSync(reader readers.UsersReader, dbUsers map[string]models.UserHisto
         toHandle = append(toHandle, v)
     }
 
-    for k, v := range dbUsers {
+    for k, v := range usersHistory {
         if _, ok := sourceUsersMap[k]; !ok {
             toDelete = append(toDelete, v.UserName)
         }

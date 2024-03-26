@@ -108,12 +108,12 @@ func main() {
     // return
     reader := readers.MemoryReader{}
 
-    dbUsers := getDbUsers()
+    dbUsers := getUsersHistory()
 
     services.ExecuteSync(reader, dbUsers)
 }
 
-func getDbUsers() (map[string]models.UserHistory) {
+func getUsersHistory() (map[string]models.UserHistory) {
     users := []models.UserHistory{
         {
             UserName: "some.user@company.name",
