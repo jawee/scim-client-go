@@ -17,7 +17,7 @@ const ERROR_EXTERNAL_ID = ""
 
 const API_URL = "http://localhost:6000/scim"
 
-func userResponseToUser(resp User) (models.User) {
+func userResponseToUser(resp scimUser) (models.User) {
     var email string
     for _, v := range resp.Emails {
         if v.Type == "work" {
@@ -54,7 +54,7 @@ func getExistingUser(token, userName string) (*models.User, error) {
         return nil, err
     }
 
-    var usersResponse GetUsersResponse
+    var usersResponse getUsersResponse
     err = json.Unmarshal(body, &usersResponse)
     if err != nil {
         return nil, err
@@ -110,32 +110,32 @@ func makeRequest(token, url, method string, content interface{})  ([]byte, error
     return resBody, nil;
 }
 
-func userToScimUser(user *models.User) User {
-    email := Email {
+func userToScimUser(user *models.User) scimUser {
+    email := scimEmail {
         "work", true, user.Email,
     }
-    phoneNumber := PhoneNumber {
+    phoneNumber := scimPhoneNumber {
         Type: "work",
         Value: user.PhoneNumber,
     }
-    scimUser := User {
-        EnterpriseUser: EnterpriseUser{
+    scimUser := scimUser {
+        EnterpriseUser: scimEnterpriseUser{
             Department: user.Department,
         }, 
         Active: user.Active,
         DisplayName: user.UserName,
-        Emails: []Email{ email },
-        Meta: Meta{
+        Emails: []scimEmail{ email },
+        Meta: scimMeta{
             ResourceType: "User",
             Created: time.Now(),
             LastModified: time.Now(),
         },
-        Name: Name{
+        Name: scimName{
             Formatted: fmt.Sprintf("%s %s", user.FirstName, user.LastName),
             FamilyName: user.LastName,
             GivenName: user.FirstName,
         },
-        PhoneNumbers: []PhoneNumber { phoneNumber, },
+        PhoneNumbers: []scimPhoneNumber { phoneNumber, },
         UserName: user.UserName,
         ExternalId: user.Id,
         Id: "",
@@ -149,16 +149,16 @@ func userToScimUser(user *models.User) User {
 }
 
 func createUser(token string, user *models.User) (ExternalId, error) {
-    scimUser := userToScimUser(user)
+    apiUser := userToScimUser(user)
     url := fmt.Sprintf("%s/users", API_URL)
     // log.Printf("Sending: %s\n", structAsString(scimUser))
-    resBytes, err := makeRequest(token, url, http.MethodPost, scimUser)
+    resBytes, err := makeRequest(token, url, http.MethodPost, apiUser)
     if err != nil {
         return "", err
     }
 
     // log.Printf("Received: %s\n", string(resBytes))
-    var createdUser User
+    var createdUser scimUser
     err = json.Unmarshal(resBytes, &createdUser)
     if err != nil {
         return "", err
@@ -351,7 +351,7 @@ func printExistingUsers(token string) {
         log.Printf("Error: %s\n", err)
         return
     }
-    var getUsersResp GetUsersResponse
+    var getUsersResp getUsersResponse
     err = json.Unmarshal(body, &getUsersResp)
     if err != nil {
         log.Printf("Error: %s\n", err)
