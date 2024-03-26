@@ -80,7 +80,6 @@ func main() {
         usage()
         os.Exit(1)
     }
-    // fmt.Printf("Len: %d, args: %v\n", len(args), args)
 
     configPath, err := getConfigPath(flags)
     if err != nil {
@@ -110,7 +109,27 @@ func main() {
 
     usersHistory := getUsersHistory(configPath)
 
-    services.ExecuteSync(reader, usersHistory)
+    results := services.ExecuteSync(reader, usersHistory)
+
+    writeUsersHistory(configPath, results)
+}
+
+func writeUsersHistory(configPath string, history []models.UserHistory) {
+    bytes, err := json.Marshal(history)
+    if err != nil {
+        fmt.Printf("ERROR: %s\n", err)
+        os.Exit(1)
+    }
+
+    file, err := os.Create(configPath + "/history.json")
+    if err != nil {
+        fmt.Printf("ERROR: %s\n", err)
+        os.Exit(1)
+    }
+
+    defer file.Close()
+
+    fmt.Fprintf(file, string(bytes))
 }
 
 func getUsersHistory(configPath string) (map[string]models.UserHistory) {
@@ -127,6 +146,8 @@ func getUsersHistory(configPath string) (map[string]models.UserHistory) {
 
     var history []models.UserHistory
     err = json.Unmarshal(historyFileContent, &history)
+
+    fmt.Printf("INFO: Got %d history elements\n", len(history))
 
     if err != nil {
         fmt.Printf("ERROR: %s\n", err)
