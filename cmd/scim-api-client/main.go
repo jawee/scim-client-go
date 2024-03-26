@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -9,7 +10,6 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/jawee/scim-client-go/internal/flags"
 	"github.com/jawee/scim-client-go/internal/models"
@@ -108,37 +108,57 @@ func main() {
     // return
     reader := readers.MemoryReader{}
 
-    dbUsers := getUsersHistory()
+    usersHistory := getUsersHistory(configPath)
 
-    services.ExecuteSync(reader, dbUsers)
+    services.ExecuteSync(reader, usersHistory)
 }
 
-func getUsersHistory() (map[string]models.UserHistory) {
-    users := []models.UserHistory{
-        {
-            UserName: "some.user@company.name",
-            ErrorMessages: nil,
-            LastSync: time.Now().Add(time.Duration(-120)),
-        },
-        {
-            UserName: "other.user@company.name",
-            ErrorMessages: nil,
-            LastSync: time.Now().Add(time.Duration(-120)),
-        },
-        {
-            UserName: "third.user@company.name",
-            ErrorMessages: nil,
-            LastSync: time.Now().Add(time.Duration(-120)),
-        },
-        {
-            UserName: "fourth.user@company.name",
-            ErrorMessages: nil,
-            LastSync: time.Now().Add(time.Duration(-120)),
-        },
+func getUsersHistory(configPath string) (map[string]models.UserHistory) {
+
+    historyFileContent, err := os.ReadFile(configPath + "/history.json")
+    if os.IsNotExist(err) {
+        historyFileContent = []byte{'[', ']'}
     }
 
+    if !os.IsNotExist(err) && err != nil {
+        fmt.Printf("ERROR: %s\n", err)
+        os.Exit(1)
+    }
+
+    var history []models.UserHistory
+    err = json.Unmarshal(historyFileContent, &history)
+
+    if err != nil {
+        fmt.Printf("ERROR: %s\n", err)
+        os.Exit(1)
+    }
+
+    // users := []models.UserHistory{
+    //     {
+    //         UserName: "some.user@company.name",
+    //         ErrorMessages: nil,
+    //         LastSync: time.Now().Add(time.Duration(-120)),
+    //     },
+    //     {
+    //         UserName: "other.user@company.name",
+    //         ErrorMessages: nil,
+    //         LastSync: time.Now().Add(time.Duration(-120)),
+    //     },
+    //     {
+    //         UserName: "third.user@company.name",
+    //         ErrorMessages: nil,
+    //         LastSync: time.Now().Add(time.Duration(-120)),
+    //     },
+    //     {
+    //         UserName: "fourth.user@company.name",
+    //         ErrorMessages: nil,
+    //         LastSync: time.Now().Add(time.Duration(-120)),
+    //     },
+    // }
+
+
     m := map[string]models.UserHistory{}
-    for _, v := range users {
+    for _, v := range history {
         m[v.UserName] = v
     }
     return m

@@ -7,8 +7,7 @@ import (
 	"path"
 )
 
-type FileConfigurationProvider struct {
-}
+type FileConfigurationProvider struct { }
 
 func findConfigurationFile() (*os.File, error) {
     // userCfgDir, err := os.UserConfigDir();
