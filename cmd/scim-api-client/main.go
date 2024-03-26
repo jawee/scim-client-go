@@ -94,10 +94,16 @@ func main() {
     }
 
     if err != nil {
+        fmt.Printf("ERROR: %s\n", err)
         os.Exit(1)
     }
 
-    fmt.Printf("%s\n", configPath)
+    configFile, err := os.ReadFile(configPath + "/config.json")
+    if err != nil {
+        fmt.Printf("ERROR: %s\n", err)
+        os.Exit(1)
+    }
+    fmt.Printf("%s\n", string(configFile))
     return
     reader := readers.MemoryReader{}
 
