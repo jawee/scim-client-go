@@ -21,7 +21,7 @@ func usage() {
 	fmt.Printf("Usage:\n    scim-client [flags]\n")
 	fmt.Printf("Flags:\n")
     fmt.Printf("    %s        %s\n", "-h, --help", "Print help")
-    fmt.Printf("    %s      %s\n", "-c, --configDir", "Path to config directory")
+    fmt.Printf("    %s   %s\n", "-c, --configDir", "Path to config directory")
     fmt.Printf("    %s       %s\n", "-i, --input", "Source of users to import")
     fmt.Printf("    %s       %s\n", "-d, --delta", "Delta import, only users included in this run")
 }
